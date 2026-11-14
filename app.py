@@ -24,6 +24,10 @@ ETAPAS = ("leitura", "observação", "interpretação", "aplicação")
 
 
 def run(data):
+    if not isinstance(data, dict):
+        raise ValueError("A entrada deve ser um objeto JSON.")
+    if not isinstance(data["atividades"], list) or any(not isinstance(item, dict) for item in data["atividades"]):
+        raise ValueError("O campo atividades deve ser uma lista de objetos.")
     limite = inteiro(data["minutos"], 1)
     atual, agenda = 0, []
     fases = {chave(fase): fase for fase in ETAPAS}
@@ -67,3 +71,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
