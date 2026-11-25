@@ -2,6 +2,7 @@
 
 
 from unicodedata import combining, normalize
+import re
 
 
 def texto(value):
@@ -23,12 +24,28 @@ def chave(value):
 ETAPAS = ("leitura", "observação", "interpretação", "aplicação")
 
 
+def horario_inicial(value):
+    if not isinstance(value, str) or not re.fullmatch(r"[0-9]{2}:[0-9]{2}", value):
+        raise ValueError("Use horário inicial no formato HH:MM.")
+    hora, minuto = map(int, value.split(":"))
+    if hora > 23 or minuto > 59:
+        raise ValueError("Horário inicial inválido.")
+    return hora * 60 + minuto
+
+
+def horario_relativo(inicio, deslocamento):
+    dia, minuto = divmod(inicio + deslocamento, 1440)
+    hora, minuto = divmod(minuto, 60)
+    return {"horario": f"{hora:02d}:{minuto:02d}", "dia": dia}
+
+
 def run(data):
     if not isinstance(data, dict):
         raise ValueError("A entrada deve ser um objeto JSON.")
     if not isinstance(data["atividades"], list) or any(not isinstance(item, dict) for item in data["atividades"]):
         raise ValueError("O campo atividades deve ser uma lista de objetos.")
     limite = inteiro(data["minutos"], 1)
+    inicio = horario_inicial(data['horario_inicial']) if 'horario_inicial' in data else None
     atual, agenda = 0, []
     fases = {chave(fase): fase for fase in ETAPAS}
     for item in data["atividades"]:
@@ -40,6 +57,9 @@ def run(data):
             raise ValueError("O roteiro excede o tempo disponível.")
         agenda.append({"fase": fases[fase], "descricao": texto(item["descricao"]),
                        "inicio": atual, "fim": fim})
+        if inicio is not None:
+            agenda[-1]['inicio_real'] = horario_relativo(inicio, atual)
+            agenda[-1]['fim_real'] = horario_relativo(inicio, fim)
         atual = fim
     realizadas = {item["fase"] for item in agenda}
     return {"referencia": texto(data["referencia"]), "agenda": agenda,

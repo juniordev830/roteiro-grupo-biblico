@@ -28,3 +28,13 @@ Também é possível encadear a ferramenta com outro comando usando `-` como ent
 ```bash
 cat exemplo.json | python app.py -
 ```
+
+
+## Horários reais da reunião
+
+Adicione a propriedade opcional `"horario_inicial": "19:30"` ao objeto JSON
+de entrada para calcular os horários reais de cada atividade. Na saída JSON,
+`inicio_real` e `fim_real` contêm o horário no formato HH:MM e o deslocamento
+de dia (0 = dia inicial; 1 = dia seguinte). Por exemplo, uma atividade de
+20 minutos que começa às 23:50 termina às 00:10 no dia 1. Sem a propriedade,
+a saída anterior permanece igual. O CSV mantém os minutos relativos.

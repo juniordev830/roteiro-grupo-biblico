@@ -74,3 +74,27 @@ class JsonEstritoCliTest(unittest.TestCase):
                     self.assertEqual(resultado.returncode, 2)
                     self.assertIn(constante, resultado.stderr)
                     self.assertEqual(resultado.stdout, "")
+
+
+class HorarioRealTest(unittest.TestCase):
+    def roteiro(self, **extras):
+        return dict(referencia="João 15", minutos=60,
+                    atividades=[dict(fase="leitura", descricao="Ler", minutos=20)],
+                    **extras)
+
+    def test_horario_cruza_meia_noite(self):
+        item = run(self.roteiro(horario_inicial="23:50"))["agenda"][0]
+        self.assertEqual(item["inicio_real"], {"horario": "23:50", "dia": 0})
+        self.assertEqual(item["fim_real"], {"horario": "00:10", "dia": 1})
+
+    def test_horario_no_mesmo_dia(self):
+        item = run(self.roteiro(horario_inicial="09:00"))["agenda"][0]
+        self.assertEqual(item["fim_real"], {"horario": "09:20", "dia": 0})
+
+    def test_horario_opcional_preserva_saida(self):
+        self.assertNotIn("inicio_real", run(self.roteiro())["agenda"][0])
+
+    def test_horario_invalido(self):
+        for value in ("24:00", "12:60", "9:00", None, 900):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                run(self.roteiro(horario_inicial=value))
