@@ -42,9 +42,24 @@ def run(data):
                        "inicio": atual, "fim": fim})
         atual = fim
     realizadas = {item["fase"] for item in agenda}
-    return {"referencia": texto(data["referencia"]), "agenda": agenda,
-            "fases_pendentes": [fase for fase in ETAPAS if fase not in realizadas],
-            "minutos_livres": limite - atual}
+    resultado = {"referencia": texto(data["referencia"]), "agenda": agenda,
+                 "fases_pendentes": [fase for fase in ETAPAS if fase not in realizadas],
+                 "minutos_livres": limite - atual}
+    if "hora_inicio" in data:
+        from datetime import datetime
+        hora = texto(data["hora_inicio"])
+        if len(hora) != 5 or hora[2] != ":" or not (hora[:2] + hora[3:]).isascii() or not (hora[:2] + hora[3:]).isdigit():
+            raise ValueError("Informe hora_inicio no formato HH:MM.")
+        inicio = datetime.strptime(hora, "%H:%M")
+        def horario(minutos):
+            dias, resto = divmod(inicio.hour * 60 + inicio.minute + minutos, 1440)
+            h, m = divmod(resto, 60)
+            return {"hora": f"{h:02d}:{m:02d}", "dias_depois": dias}
+        for etapa in agenda:
+            etapa["hora_inicio"] = horario(etapa["inicio"])
+            etapa["hora_fim"] = horario(etapa["fim"])
+        resultado["hora_limite"] = horario(limite)
+    return resultado
 
 
 import argparse

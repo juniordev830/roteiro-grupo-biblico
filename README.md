@@ -28,3 +28,8 @@ Também é possível encadear a ferramenta com outro comando usando `-` como ent
 ```bash
 cat exemplo.json | python app.py -
 ```
+
+
+## Novo recurso
+
+Campo opcional `hora_inicio` (HH:MM): acrescenta horários reais às etapas e ao limite da reunião, incluindo `dias_depois` quando atravessa a meia-noite. A saída anterior é preservada se omitido.
