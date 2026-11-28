@@ -1,5 +1,7 @@
 # Roteiro para grupo bíblico
 
+**Navegação** · [Rodar](#rodar) · [Uso](#uso) · [Fontes e exemplos](#fontes-e-exemplos) · [Código e estudo](docs/ENGENHARIA_REVERSA.md)
+
 Distribua o tempo da reunião entre leitura, observação, interpretação e aplicação.
 
 ## Rodar
@@ -28,3 +30,9 @@ Também é possível encadear a ferramenta com outro comando usando `-` como ent
 ```bash
 cat exemplo.json | python app.py -
 ```
+
+## Código e roteiro de estudo
+
+Como manter a soma dos minutos correta quando a divisão não é exata? O [guia de engenharia reversa](docs/ENGENHARIA_REVERSA.md) reúne o mapa dos módulos e uma pergunta técnica baseada no projeto.
+
+Mantido por [João Junior](https://github.com/juniordev830).
